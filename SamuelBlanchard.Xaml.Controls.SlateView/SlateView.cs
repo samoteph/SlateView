@@ -233,7 +233,10 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
                 blurEffect.Dispose();
             }
 
-            blurEffect = new GaussianBlurEffect();
+            if (this.AllowBlur == true)
+            {
+                blurEffect = new GaussianBlurEffect();
+            }
 
             this.CreateResources?.Invoke(sender, args);
         }
@@ -347,6 +350,11 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
 
                     if (AllowBlur)
                     {
+                        if(blurEffect == null)
+                        {
+                            blurEffect = new GaussianBlurEffect();
+                        }
+
                         // Set image to blur.
                         blurEffect.Source = bmp;
                         // Set blur amount from slider control.
@@ -358,6 +366,16 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
                         // Draw blurred image on top of the unaltered one. It will be masked by the radial gradient
                         // thus showing a transparent hole in the middle, and properly overlaying the alpha values.
                         image = blurEffect;
+                    }
+                    else
+                    {
+                        var effect = blurEffect;
+
+                        if(effect != null)
+                        {
+                            effect.Dispose();
+                            blurEffect = null;
+                        }
                     }
 
                     args.DrawingSession.DrawImage(image, new Rect(0, 0, sender.Size.Width, sender.Size.Height), rectBack, (float)BackgroundImageOpacity, interpolation);

@@ -10,7 +10,9 @@
 
     <Grid>
         <my:SlateView 
+            
             x:Name="SlateView"
+            
             ElementShown="ImageAndBackground" 
             AllowBlur="True"
             BlurEffectAmount="12"
@@ -20,8 +22,7 @@
             Background="Black"
             ImageInterpolation="NearestNeighbor"
             ImageMargin="50"
-            SourceUri="ms-appx:///Assets/Images/Resto.jpg"
-            
+            SourceUri="ms-appx:///Assets/Images/House.jpg"            
             />
     
     </Grid>
