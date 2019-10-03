@@ -1,4 +1,4 @@
-﻿<Page xmlns:my="using:SamuelBlanchard.Xaml.Controls.BlurPixelView" 
+﻿<Page 
     x:Class="SamuelBlanchard.Xaml.Controls.Samples.BlurPixelView.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -6,26 +6,25 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
-    <Grid>
-        <my:SlateView 
-            
-            x:Name="SlateView"
-            
-            ElementShown="ImageAndBackground" 
-            AllowBlur="True"
-            BlurEffectAmount="12"
-            BlurEffectBorderMode="Hard"
-            BlurEffectOptimization="Speed"
-            BackgroundImageOpacity="0.5"
-            Background="Black"
-            ImageInterpolation="NearestNeighbor"
-            ImageMargin="50"
-            SourceUri="ms-appx:///Assets/Images/House.jpg"            
-            />
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     
-    </Grid>
+    xmlns:my="using:SamuelBlanchard.Xaml.Controls.BlurPixelView" 
+    >
+    <my:SlateView 
+            
+        x:Name="SlateView"
+            
+        SourceUri="ms-appx:///Assets/Images/House.jpg"            
+        ElementShown="ImageAndBackground" 
+        AllowBlur="True"
+        BlurEffectAmount="12"
+        BlurEffectBorderMode="Hard"
+        BlurEffectOptimization="Speed"
+        BackgroundImageOpacity="0.5"
+        Background="Black"
+        ImageInterpolation="NearestNeighbor"
+        ImageMargin="50"
+        />
 </Page>
 
     
