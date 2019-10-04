@@ -86,7 +86,17 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
         {
             get;
             set;
-        } = ShowElements.ImageAndBackground;
+        } = ShowElements.FrontAndBack;
+
+        public bool SetPixel(int x, int y, Pixel pixel)
+        {
+            return SetPixel(x, y,
+                pixel.r,
+                pixel.g,
+                pixel.b,
+                pixel.a
+                );
+        }
 
         /// <summary>
         /// Set a pixel
@@ -143,7 +153,7 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
         /// <param name="a"></param>
         /// <returns></returns>
 
-        public bool GetPixel(int x, int y, out byte r, out byte g, out byte b, out byte a)
+        public Pixel GetPixel(int x, int y)
         {
             var pixels = this.Pixels;
             var h = this.PixelHeight;
@@ -151,22 +161,30 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
 
             if (pixels == null || (x >= w || x < 0) || (y >= h || y < 0))
             {
-                r = 0;
-                g = 0;
-                b = 0;
-                a = 0;
-                return false;
+                return Pixel.Empty;
             }
 
             var p = ((h * y) + x) * 4;
 
-            // bgra format
-            b = pixels[p + 0];
-            g = pixels[p + 1];
-            r = pixels[p + 2];
-            a = pixels[p + 3];
+            var px = new Pixel();
 
-            return true;
+            // bgra format
+            px.r = pixels[p + 0];
+            px.g = pixels[p + 1];
+            px.r = pixels[p + 2];
+            px.a = pixels[p + 3];
+
+            return px;
+        }
+
+        public void ClearPixels(Pixel pixel)
+        {
+            ClearPixels(
+                pixel.r,
+                pixel.g,
+                pixel.b,
+                pixel.a
+                );
         }
 
         public void ClearPixels(byte r = 0x00, byte g = 0x00, byte b = 0x00, byte a = 0xFF)
@@ -297,8 +315,8 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
         // Summary:
         //     Hook this event to draw the contents of the control.
         public event TypedEventHandler<ICanvasAnimatedControl, CanvasAnimatedDrawEventArgs> DrawStart;
-        public event TypedEventHandler<ICanvasAnimatedControl, CanvasAnimatedDrawEventArgs> DrawBackground;
-        public event TypedEventHandler<ICanvasAnimatedControl, CanvasAnimatedDrawEventArgs> DrawForeground;
+        public event TypedEventHandler<ICanvasAnimatedControl, CanvasAnimatedDrawEventArgs> DrawBack;
+        public event TypedEventHandler<ICanvasAnimatedControl, CanvasAnimatedDrawEventArgs> DrawFront;
         public event TypedEventHandler<ICanvasAnimatedControl, CanvasAnimatedDrawEventArgs> DrawStop;
 
         // Summary:
@@ -342,7 +360,7 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
             if (bmp != null)
             {
                 // Draw Background
-                if (elementShown == ShowElements.Background || elementShown == ShowElements.ImageAndBackground)
+                if (elementShown == ShowElements.BackOnly || elementShown == ShowElements.FrontAndBack)
                 {
                     var rectBack = GetBackRect(sender.Size, pixelWidth, pixelHeight);
 
@@ -380,16 +398,16 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
 
                     args.DrawingSession.DrawImage(image, new Rect(0, 0, sender.Size.Width, sender.Size.Height), rectBack, (float)BackgroundImageOpacity, interpolation);
 
-                    this.DrawBackground?.Invoke(sender, args);
+                    this.DrawBack?.Invoke(sender, args);
                 }
 
                 // Draw Image
-                if (elementShown == ShowElements.Image || elementShown == ShowElements.ImageAndBackground)
+                if (elementShown == ShowElements.FrontOnly || elementShown == ShowElements.FrontAndBack)
                 {
                     var rectFront = GetFrontRect(sender.Size, this.ImageMargin, pixelWidth, pixelHeight);
                     args.DrawingSession.DrawImage(bmp, rectFront, new Rect(0, 0, pixelWidth, pixelHeight), 1f, interpolation);
 
-                    this.DrawForeground?.Invoke(sender, args);
+                    this.DrawFront?.Invoke(sender, args);
                 }
             }
 
@@ -466,6 +484,26 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
             return new Rect(x, y, width, height);
         }
 
+        public async Task <bool> LoadImage(StorageFile file)
+        {
+            try
+            {
+                using (var stream = await file.OpenReadAsync())
+                {
+                    BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
+                    var bmp = await decoder.GetSoftwareBitmapAsync();
+
+                    this.SetPixels(bmp);
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Chargmement de l'image
         /// </summary>
@@ -483,15 +521,7 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
             {
                 var file = await StorageFile.GetFileFromApplicationUriAsync(uriImage);
 
-                using (var stream = await file.OpenReadAsync())
-                {
-                    BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
-                    var bmp = await decoder.GetSoftwareBitmapAsync();
-
-                    this.SetPixels(bmp);
-                }
-
-                return true;
+                return await this.LoadImage(file);
             }
             catch
             {
@@ -531,7 +561,7 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
 
         public void SetPixels(SoftwareBitmap bitmap)
         {
-            if (bitmap.BitmapPixelFormat != BitmapPixelFormat.Bgra8 && bitmap.BitmapPixelFormat == BitmapPixelFormat.Rgba8)
+            if (bitmap.BitmapPixelFormat != BitmapPixelFormat.Bgra8)
             {
                 throw new Exception("Unsupported file format (BGRA8 is supported) ");
             }
@@ -581,13 +611,39 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
             this.ClearPixels();
             this.InvalidatePixels();
         }
+
+        public void CreatePixels(int pixelWidth, int pixelHeight, Pixel clearPixel)
+        {
+            this.PixelSize = new Size(pixelWidth, pixelHeight);
+            this.Pixels = new byte[(int)pixelWidth * (int)pixelHeight * 4];
+            this.ClearPixels(clearPixel);
+            this.InvalidatePixels();
+        }
     }
 
     public enum ShowElements
     {
         None,
-        ImageAndBackground,
-        Image,
-        Background,
+        FrontAndBack,
+        FrontOnly,
+        BackOnly,
+    }
+
+    public struct Pixel
+    {
+        public byte a;
+        public byte r;
+        public byte g;
+        public byte b;
+
+        public static Pixel Empty
+        {
+            get
+            {
+                return empty;
+            }
+        }
+
+        private static Pixel empty = new Pixel();
     }
 }

@@ -6,16 +6,15 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-    
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"    
     xmlns:my="using:SamuelBlanchard.Xaml.Controls.BlurPixelView" 
     >
     <my:SlateView 
             
         x:Name="SlateView"
             
-        SourceUri="ms-appx:///Assets/Images/House.jpg"            
-        ElementShown="ImageAndBackground" 
+        SourceUri="ms-appx:///Assets/Images/Resto.jpg"            
+        ElementShown="FrontAndBack" 
         AllowBlur="True"
         BlurEffectAmount="12"
         BlurEffectBorderMode="Hard"
@@ -23,7 +22,7 @@
         BackgroundImageOpacity="0.5"
         Background="Black"
         ImageInterpolation="NearestNeighbor"
-        ImageMargin="50"
+        ImageMargin="0"
         />
 </Page>
 
