@@ -1,5 +1,5 @@
 # SlateView
-SlateView is an UWP control to show pixels quickly and with a beautiful blurred background
+SlateView is an UWP control to show pixels quickly with a beautiful blurred background
 
 https://youtu.be/pR1GTmhkNwA
 
