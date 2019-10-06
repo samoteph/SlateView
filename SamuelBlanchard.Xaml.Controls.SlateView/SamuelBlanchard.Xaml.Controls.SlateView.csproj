@@ -7,7 +7,7 @@
     <ProjectGuid>{2812329C-8DE6-41A0-9D7B-2A92817EF67A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SamuelBlanchard.Xaml.Controls.SlateView</RootNamespace>
+    <RootNamespace>SamuelBlanchard.Xaml.Controls</RootNamespace>
     <AssemblyName>SamuelBlanchard.Xaml.Controls.SlateView</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>

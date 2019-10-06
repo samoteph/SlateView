@@ -24,7 +24,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 // The Templated Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234235
 
-namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
+namespace SamuelBlanchard.Xaml.Controls
 {
     public sealed class SlateView : Control
     {
@@ -246,6 +246,9 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
 
         private void Canvas_CreateResources(CanvasAnimatedControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
         {
+
+            Debug.WriteLine("CreateResource");
+
             if(blurEffect != null)
             {
                 blurEffect.Dispose();
@@ -253,6 +256,7 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
 
             if (this.AllowBlur == true)
             {
+                Debug.WriteLine("CreateResource new GaussianBlurEffect");
                 blurEffect = new GaussianBlurEffect();
             }
 
@@ -325,93 +329,113 @@ namespace SamuelBlanchard.Xaml.Controls.BlurPixelView
 
         private void Canvas_Draw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
         {
-            this.DrawStart?.Invoke(sender, args);
+            Debug.WriteLine("Draw");
 
-            var bmp = this.canvasBitmap;
-
-            bool isScreenDirty = this.isScreenDirty;
-
-            var pixels = this.Pixels;
-            var pixelWidth = this.PixelWidth;
-            var pixelHeight = this.PixelHeight;
-            var interpolation = this.ImageInterpolation;
-
-            if(pixels == null || pixelWidth == 0 || pixelHeight == 0)
+            try
             {
-                return;
-            }
+                this.DrawStart?.Invoke(sender, args);
 
-            if (isScreenDirty == true)
-            {
-                if (bmp == null || bmp.SizeInPixels.Width != pixelWidth || bmp.SizeInPixels.Height != pixelHeight)
+                var bmp = this.canvasBitmap;
+
+                bool isScreenDirty = this.isScreenDirty;
+
+                var pixels = this.Pixels;
+                var pixelWidth = this.PixelWidth;
+                var pixelHeight = this.PixelHeight;
+                var interpolation = this.ImageInterpolation;
+
+                if (pixels == null || pixelWidth == 0 || pixelHeight == 0)
                 {
-                    bmp = CanvasBitmap.CreateFromBytes(sender, pixels, pixelWidth, pixelHeight, Windows.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized);
-                    this.canvasBitmap = bmp;
+                    return;
                 }
 
-                bmp.SetPixelBytes(pixels);
-
-                this.isScreenDirty = false;
-            }
-
-            var elementShown = this.ElementShown;
-
-            // possible if IsDirty is fixed in the middle of the call of Draw method
-            if (bmp != null)
-            {
-                // Draw Background
-                if (elementShown == ShowElements.BackOnly || elementShown == ShowElements.FrontAndBack)
+                if (isScreenDirty == true)
                 {
-                    var rectBack = GetBackRect(sender.Size, pixelWidth, pixelHeight);
-
-                    ICanvasImage image = bmp;
-
-                    if (AllowBlur)
+                    if (bmp == null || bmp.SizeInPixels.Width != pixelWidth || bmp.SizeInPixels.Height != pixelHeight)
                     {
-                        if(blurEffect == null)
-                        {
-                            blurEffect = new GaussianBlurEffect();
-                        }
-
-                        // Set image to blur.
-                        blurEffect.Source = bmp;
-                        // Set blur amount from slider control.
-                        blurEffect.BlurAmount = (float)this.BlurEffectAmount;
-                        // Explicitly set optimization mode to highest quality, since we are using big blur amount values.
-                        blurEffect.Optimization = this.BlurEffectOptimization;
-                        // This prevents the blur effect from wrapping around.
-                        blurEffect.BorderMode = this.BlurEffectBorderMode;
-                        // Draw blurred image on top of the unaltered one. It will be masked by the radial gradient
-                        // thus showing a transparent hole in the middle, and properly overlaying the alpha values.
-                        image = blurEffect;
-                    }
-                    else
-                    {
-                        var effect = blurEffect;
-
-                        if(effect != null)
-                        {
-                            effect.Dispose();
-                            blurEffect = null;
-                        }
+                        bmp = CanvasBitmap.CreateFromBytes(sender, pixels, pixelWidth, pixelHeight, Windows.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized);
+                        this.canvasBitmap = bmp;
                     }
 
-                    args.DrawingSession.DrawImage(image, new Rect(0, 0, sender.Size.Width, sender.Size.Height), rectBack, (float)BackgroundImageOpacity, interpolation);
+                    bmp.SetPixelBytes(pixels);
 
-                    this.DrawBack?.Invoke(sender, args);
+                    this.isScreenDirty = false;
                 }
 
-                // Draw Image
-                if (elementShown == ShowElements.FrontOnly || elementShown == ShowElements.FrontAndBack)
+                var elementShown = this.ElementShown;
+
+                // possible if IsDirty is fixed in the middle of the call of Draw method
+                if (bmp != null)
                 {
-                    var rectFront = GetFrontRect(sender.Size, this.ImageMargin, pixelWidth, pixelHeight);
-                    args.DrawingSession.DrawImage(bmp, rectFront, new Rect(0, 0, pixelWidth, pixelHeight), 1f, interpolation);
+                    // Draw Background
+                    if (elementShown == ShowElements.BackOnly || elementShown == ShowElements.FrontAndBack)
+                    {
+                        var rectBack = GetBackRect(sender.Size, pixelWidth, pixelHeight);
 
-                    this.DrawFront?.Invoke(sender, args);
+                        ICanvasImage image = bmp;
+
+                        if (AllowBlur)
+                        {
+                            if (blurEffect == null)
+                            {
+                                Debug.WriteLine("Draw new GaussianBlurEffect");
+                                blurEffect = new GaussianBlurEffect();
+                            }
+
+                            // Set image to blur.
+                            blurEffect.Source = bmp;
+                            // Set blur amount from slider control.
+                            blurEffect.BlurAmount = (float)this.BlurEffectAmount;
+                            // Explicitly set optimization mode to highest quality, since we are using big blur amount values.
+                            blurEffect.Optimization = this.BlurEffectOptimization;
+                            // This prevents the blur effect from wrapping around.
+                            blurEffect.BorderMode = this.BlurEffectBorderMode;
+                            // Draw blurred image on top of the unaltered one. It will be masked by the radial gradient
+                            // thus showing a transparent hole in the middle, and properly overlaying the alpha values.
+                            image = blurEffect;
+                        }
+                        else
+                        {
+                            var effect = blurEffect;
+
+                            if (effect != null)
+                            {
+                                effect.Dispose();
+                                blurEffect = null;
+                            }
+                        }
+
+                        args.DrawingSession.DrawImage(image, new Rect(0, 0, sender.Size.Width, sender.Size.Height), rectBack, (float)BackgroundImageOpacity, interpolation);
+
+                        this.DrawBack?.Invoke(sender, args);
+                    }
+
+                    // Draw Image
+                    if (elementShown == ShowElements.FrontOnly || elementShown == ShowElements.FrontAndBack)
+                    {
+                        var rectFront = GetFrontRect(sender.Size, this.ImageMargin, pixelWidth, pixelHeight);
+                        args.DrawingSession.DrawImage(bmp, rectFront, new Rect(0, 0, pixelWidth, pixelHeight), 1f, interpolation);
+
+                        this.DrawFront?.Invoke(sender, args);
+                    }
                 }
-            }
 
-            this.DrawStop?.Invoke(sender, args);
+                this.DrawStop?.Invoke(sender, args);
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("ex=" + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Obtenir le Rectangle de l'image de premier plan
+        /// </summary>
+        /// <returns></returns>
+
+        public Rect GetFrontRect()
+        {
+            return GetFrontRect(this.RenderSize, this.ImageMargin, this.PixelWidth, this.PixelHeight);
         }
 
         Rect GetFrontRect(Size size, Thickness margin, int pixelWidth, int pixelHeight)

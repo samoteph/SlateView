@@ -1,28 +1,28 @@
 ﻿<Page 
-    x:Class="SamuelBlanchard.Xaml.Controls.Samples.BlurPixelView.MainPage"
+    x:Class="SamuelBlanchard.Xaml.Controls.Samples.SlateView.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:SamuelBlanchard.Xaml.Controls.Samples.BlurPixelView"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"    
-    xmlns:my="using:SamuelBlanchard.Xaml.Controls.BlurPixelView" 
+    
+    xmlns:my="using:SamuelBlanchard.Xaml.Controls" 
     >
     <my:SlateView 
             
         x:Name="SlateView"
             
-        SourceUri="ms-appx:///Assets/Images/Resto.jpg"            
+        SourceUri="ms-appx:///Assets/Images/House.jpg"            
         ElementShown="FrontAndBack" 
         AllowBlur="True"
-        BlurEffectAmount="12"
+        BlurEffectAmount="10"
         BlurEffectBorderMode="Hard"
         BlurEffectOptimization="Speed"
-        BackgroundImageOpacity="0.5"
-        Background="Black"
-        ImageInterpolation="NearestNeighbor"
-        ImageMargin="0"
+        BackgroundImageOpacity="0.75"
+        Background="Red"
+        ImageInterpolation="Cubic"
+        ImageMargin="50"
         />
 </Page>
 

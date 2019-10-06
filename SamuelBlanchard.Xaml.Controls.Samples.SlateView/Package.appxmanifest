@@ -30,12 +30,12 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="SamuelBlanchard.Xaml.Controls.Samples.BlurPixelView.App">
+      EntryPoint="SamuelBlanchard.Xaml.Controls.Samples.SlateView.App">
       <uap:VisualElements
-        DisplayName="SamuelBlanchard.Xaml.Controls.Samples.BlurPixelView"
+        DisplayName="SlateView Sample"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="SamuelBlanchard.Xaml.Controls.Samples.BlurPixelView"
+        Description="SlateView Sample"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />

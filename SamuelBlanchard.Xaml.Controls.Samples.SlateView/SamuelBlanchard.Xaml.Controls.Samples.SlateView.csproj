@@ -7,8 +7,8 @@
     <ProjectGuid>{E71B1252-3B49-438F-8F54-224891B0B64C}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SamuelBlanchard.Xaml.Controls.Samples.BlurPixelView</RootNamespace>
-    <AssemblyName>SamuelBlanchard.Xaml.Controls.Samples.BlurPixelView</AssemblyName>
+    <RootNamespace>SamuelBlanchard.Xaml.Controls.Samples.SlateView</RootNamespace>
+    <AssemblyName>SamuelBlanchard.Xaml.Controls.Samples.SlateView</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
