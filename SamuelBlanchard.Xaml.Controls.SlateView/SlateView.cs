@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Media;
+using Windows.Media.Capture;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -579,6 +580,11 @@ namespace SamuelBlanchard.Xaml.Controls
         }
 
         public void SetPixels(VideoFrame frame)
+        {
+            this.SetPixels(frame.SoftwareBitmap);
+        }
+
+        public void SetPixels(CapturedFrame frame)
         {
             this.SetPixels(frame.SoftwareBitmap);
         }
