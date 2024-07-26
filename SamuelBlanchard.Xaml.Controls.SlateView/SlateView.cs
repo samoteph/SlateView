@@ -89,13 +89,14 @@ namespace SamuelBlanchard.Xaml.Controls
             set;
         } = ShowElements.FrontAndBack;
 
-        public bool SetPixel(int x, int y, Pixel pixel)
+        public bool SetPixel(int x, int y, Pixel pixel, bool autoInvalidate = true)
         {
             return SetPixel(x, y,
                 pixel.r,
                 pixel.g,
                 pixel.b,
-                pixel.a
+                pixel.a,
+                autoInvalidate
                 );
         }
 
@@ -109,7 +110,7 @@ namespace SamuelBlanchard.Xaml.Controls
         /// <param name="b"></param>
         /// <param name="a"></param>
 
-        public bool SetPixel(int x, int y, byte r, byte g, byte b, byte a = 0xFF)
+        public bool SetPixel(int x, int y, byte r, byte g, byte b, byte a = 0xFF, bool autoInvalidate = true)
         {
             var pixels = this.Pixels;
             var h = this.PixelHeight;
@@ -130,7 +131,7 @@ namespace SamuelBlanchard.Xaml.Controls
                 return false;
             }
 
-            var p = ((h * y) + x) * 4;
+            var p = ((w * y) + x) * 4;
 
             // bgra format
             pixels[p + 0] = b;
@@ -138,7 +139,10 @@ namespace SamuelBlanchard.Xaml.Controls
             pixels[p + 2] = r;
             pixels[p + 3] = a;
 
-            this.InvalidatePixels();
+            if (autoInvalidate)
+            {
+                this.InvalidatePixels();
+            }
 
             return true;
         }
@@ -165,7 +169,7 @@ namespace SamuelBlanchard.Xaml.Controls
                 return Pixel.Empty;
             }
 
-            var p = ((h * y) + x) * 4;
+            var p = ((w * y) + x) * 4;
 
             var px = new Pixel();
 
