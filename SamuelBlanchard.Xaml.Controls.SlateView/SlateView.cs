@@ -334,8 +334,6 @@ namespace SamuelBlanchard.Xaml.Controls
 
         private void Canvas_Draw(ICanvasAnimatedControl sender, CanvasAnimatedDrawEventArgs args)
         {
-            Debug.WriteLine("Draw");
-
             try
             {
                 this.DrawStart?.Invoke(sender, args);
